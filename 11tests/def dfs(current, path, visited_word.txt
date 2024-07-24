@@ -1,0 +1,37 @@
+def dfs(current, path, visited_words,visited,n):
+    x, y = current
+    letter = board[x][y]
+    new_path = path + [(x, y)]
+
+    # Check if the current path forms any of the target words
+    formed_words = []
+    for word in words:
+        if word.startswith(''.join([board[i][j] for i, j in new_path])):
+            formed_words.append(word)
+
+    if len(''.join([board[i][j] for i, j in new_path])) == n:
+        visited_words.update([(tuple(new_path), word) for word in formed_words])
+        return
+
+    visited.add(current)
+    for neighbor in get_neighbors(current, board):
+        if neighbor not in visited:
+            dfs(neighbor, new_path, visited_words,visited,n)
+    visited.remove(current)
+
+
+def find_length_n_words(n: int, board: Board, words: Iterable[str]) -> List[Path]:
+    def len_n_word_check(current, visited_words):
+        visited = set()
+        dfs(current, [], visited_words,visited,n)
+
+    paths = []
+    for i in range(len(board)):
+        for j in range(len(board[i])):
+            start = (i, j)
+            visited_words = set()
+            len_n_word_check(start, visited_words)
+            result_paths = [pair[0] for pair in visited_words if len(pair[1]) == n]
+            paths.extend(result_paths)
+
+    return paths

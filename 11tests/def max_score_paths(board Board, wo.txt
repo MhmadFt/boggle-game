@@ -1,0 +1,67 @@
+def max_score_paths(board: Board, words: Iterable[str]) -> List[Path]:
+    # max_score_paths = []
+    #
+    # for word in words:
+    #     max=[]
+    #     paths_for_word = find_length_n_words(len(word), board, word)
+    #     for path in paths_for_word:
+    #         if len(path)>len(max):
+    #             max=path[:]
+    #     if max not  in max_score_paths:
+    #         max_score_paths.append(max)
+    # max_score_paths.remove([])
+    # return max_score_paths
+    words_dict = {word: None for word in words}
+
+    # len of word can be up to len(board)**2*2
+    char_lst = [None for _ in range(len(board) ** 2 * 2)]
+
+    # len of path can be up to len(board)**2
+    coord_lst = [None for _ in range(len(board) ** 2)]
+
+    initials = help(words)
+
+    for i in range(len(board)):
+        for j in range(len(board)):
+            helpeer(board, words_dict, (i, j),
+                                     0, char_lst, 0, coord_lst, initials)
+
+    return list(words_dict[word] for word in words_dict if words_dict[word])
+def helpeer(board, words_dict, cur_coord,
+                             char_ind, char_lst, coord_ind, coord_lst,
+                             initials):
+    if not valid(cur_coord, board) or not \
+            board[cur_coord[0]][cur_coord[1]]:
+        return
+
+    cur_coord_str = board[cur_coord[0]][cur_coord[1]]
+    for i in range(len(cur_coord_str)):
+        char_lst[char_ind + i] = cur_coord_str[i]
+
+    coord_lst[coord_ind] = cur_coord
+    word = ''.join(char_lst[i] for i in range(char_ind + len(cur_coord_str)))
+
+    if word not in initials:
+        return
+
+    if word in words_dict:
+        if not words_dict[word] or len(words_dict[word]) < coord_ind + 1:
+            words_dict[word] = coord_lst[:coord_ind + 1]
+
+    board[cur_coord[0]][cur_coord[1]] = None  # if we visited this coord
+    # all the (dy, dx) of 8 directions
+    for i in range(-1, 2):
+        for j in range(-1, 2):
+            if i == 0 and j == 0:
+                continue
+            helpeer(board, words_dict,
+                                     (cur_coord[0] + i, cur_coord[1] + j),
+                                     char_ind + len(cur_coord_str),
+                                     char_lst, coord_ind + 1,
+                                     coord_lst, initials)
+    board[cur_coord[0]][cur_coord[1]] = cur_coord_str
+def help(words):
+    return set(word[:i] for word in words for i in range(len(word) + 1))
+
+def valid(cord,board):
+    return 0 <= cord[0] < len(board) and 0 <= cord[1] < len(board)
