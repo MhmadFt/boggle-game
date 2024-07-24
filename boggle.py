@@ -20,7 +20,7 @@ class BoggleGame:
         sets the window title, dimensions, and creates a canvas for displaying an image."""
         self.root = tk.Tk()
         self.root.title("Boggle Game 1")
-        self.root.geometry("420x249")
+        self.root.geometry("420x250")
         # Create a canvas and display a logo on it.
         canvas = tk.Canvas(width=420, height=250)
         canvas.pack()
